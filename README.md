@@ -13,6 +13,12 @@ Skills are the tools. Team docs are the org chart and the operating manual for t
 
 ---
 
+## Tutorial Video
+
+[Watch the walkthrough on Loom](https://www.loom.com/share/8cec334ee1b14439b61ef169608d6ddf)
+
+---
+
 ## Install
 
 Run the installer once per machine (skills install to `~/.claude/skills` and plugins install globally, not per-project):
