@@ -15,6 +15,10 @@ Skills are the tools. Team docs are the org chart and the operating manual for t
 
 ## Tutorial Video
 
+<a href="https://www.loom.com/share/8cec334ee1b14439b61ef169608d6ddf" target="_blank" rel="noopener noreferrer">
+  <img src="images/ctwds-agency-master-team.webp" alt="CTWDS Team tutorial video thumbnail" width="100%">
+</a>
+
 <a href="https://www.loom.com/share/8cec334ee1b14439b61ef169608d6ddf" target="_blank" rel="noopener noreferrer">Watch the walkthrough on Loom</a>
 
 ---
