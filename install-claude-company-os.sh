@@ -8,6 +8,7 @@
 #   bash install-claude-company-os.sh --dry-run       # show commands, change nothing
 #   bash install-claude-company-os.sh --only dev,design
 #   bash install-claude-company-os.sh --skip dev
+#   bash install-claude-company-os.sh --scope local   # this project only, not every project
 #
 # Groups: work (small business + legal + finance), marketing, social, dev, design
 #
@@ -15,6 +16,17 @@
 #
 # Note: Impeccable and Taste both install into the Designers group. They
 # overlap on frontend design, so try both and drop whichever you don't use.
+#
+# --scope local|global (default: global). This only affects skills that
+# genuinely support both. What it does NOT affect:
+#   - All plugin installs (claude plugin install) are always global. Claude
+#     Code has no per-project plugin install mode.
+#   - Impeccable always installs into the current directory by design, since
+#     it reads that project's actual tokens and components.
+#   - 97-dev uses its own installer, whose scope behavior isn't confirmed
+#     here, so --scope does not touch it either.
+# What it DOES affect: Taste, Transitions, and the 4 Anthropic example skills.
+# Local means these are only visible in whatever project you run this from.
 
 set -uo pipefail
 
@@ -25,8 +37,9 @@ set -uo pipefail
 ALL_GROUPS="work marketing social dev design"
 SELECTED_GROUPS="$ALL_GROUPS"
 DRY_RUN=0
+SCOPE="global"
 
-SKILLS_DIR="${HOME}/.claude/skills"
+SKILLS_DIR=""   # set after arg parsing, depends on --scope
 TMP_DIR="$(mktemp -d)"
 
 SUCCEEDED=()
@@ -81,6 +94,13 @@ while [ $# -gt 0 ]; do
         [ $keep -eq 1 ] && NEW="$NEW $g"
       done
       SELECTED_GROUPS="$NEW"; shift 2 ;;
+    --scope)
+      SCOPE="${2:-}"
+      if [ "$SCOPE" != "local" ] && [ "$SCOPE" != "global" ]; then
+        err "Invalid --scope value: $SCOPE (must be local or global)"
+        exit 1
+      fi
+      shift 2 ;;
     -h|--help)
       sed -n '2,18p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
     *)
@@ -92,6 +112,12 @@ has_group() {
   for g in $SELECTED_GROUPS; do [ "$g" = "$1" ] && return 0; done
   return 1
 }
+
+if [ "$SCOPE" = "global" ]; then
+  SKILLS_DIR="${HOME}/.claude/skills"
+else
+  SKILLS_DIR="./.claude/skills"
+fi
 
 # ---------------------------------------------------------------------------
 # Runner
@@ -142,6 +168,41 @@ install_plugin() {
   run "$label" claude plugin install "$spec"
 }
 
+# Guards against a known open bug in the `skills` CLI (vercel-labs/skills
+# issues #851 and #1355): `npx skills add -a claude-code` writes the skill
+# to .agents/skills/<name> (or ~/.agents/skills/<name> with -g) but does not
+# reliably create the symlink Claude Code actually reads from at
+# .claude/skills/<name>. Without this check, an install can report success
+# while remaining completely invisible to Claude Code.
+ensure_skill_symlink() {
+  local skill_name="$1" scope="$2"
+  local claude_dir agents_dir
+
+  if [ "$scope" = "global" ]; then
+    claude_dir="${HOME}/.claude/skills"
+    agents_dir="${HOME}/.agents/skills"
+  else
+    claude_dir="./.claude/skills"
+    agents_dir="./.agents/skills"
+  fi
+
+  if [ -e "$claude_dir/$skill_name" ]; then
+    return 0   # Claude Code can already see it. Nothing to fix.
+  fi
+
+  if [ -d "$agents_dir/$skill_name" ]; then
+    mkdir -p "$claude_dir"
+    ln -s "$(cd "$agents_dir/$skill_name" && pwd)" "$claude_dir/$skill_name" \
+      2>>"$TMP_DIR/install.log"
+    if [ -e "$claude_dir/$skill_name" ]; then
+      dim "  (fixed missing .claude/skills symlink for $skill_name)"
+    else
+      warn "  $skill_name installed but not visible to Claude Code."
+      warn "  Expected symlink at: $claude_dir/$skill_name"
+    fi
+  fi
+}
+
 # ---------------------------------------------------------------------------
 # Preflight
 # ---------------------------------------------------------------------------
@@ -149,6 +210,7 @@ install_plugin() {
 header "Claude Company OS Installer"
 [ $DRY_RUN -eq 1 ] && warn "DRY RUN. Nothing will be installed."
 info "Groups: $(echo $SELECTED_GROUPS | tr ' ' ',')"
+info "Scope: $SCOPE (affects Taste, Transitions, and the Anthropic example skills only)"
 
 header "Checking prerequisites"
 
@@ -268,6 +330,14 @@ if has_group dev; then
     dim "Scoped to 97-dev only. The Deevs marketplace also ships anti-ai-slop,"
     dim "golang-pro, polars-expertise, and persona workflow systems, not installed here."
   fi
+
+  info "Astro Business Builder (cliftonc0613/astro-business-builder)"
+  install_plugin "astro-business-builder" \
+    "cliftonc0613/astro-business-builder" \
+    "astro-business-builder@astro-business-builder"
+  dim "Plugin name assumed to match repo name. Not independently verified"
+  dim "against the actual .claude-plugin/plugin.json. If install fails,"
+  dim "check the real plugin name and correct the @ suffix above."
 else
   SKIPPED+=("dev")
 fi
@@ -294,17 +364,33 @@ if has_group design; then
   fi
 
   if [ $HAS_NPX -eq 1 ]; then
-    info "Taste (Leonxlnx/taste-skill)"
-    run "taste-skill" npx --yes skills add Leonxlnx/taste-skill \
-      --skill design-taste-frontend -a claude-code
+    info "Taste (Leonxlnx/taste-skill), scope: $SCOPE"
+    if [ "$SCOPE" = "global" ]; then
+      run "taste-skill" npx --yes skills add Leonxlnx/taste-skill \
+        --skill design-taste-frontend -a claude-code -g
+    else
+      run "taste-skill" npx --yes skills add Leonxlnx/taste-skill \
+        --skill design-taste-frontend -a claude-code
+    fi
+    [ $DRY_RUN -eq 0 ] && ensure_skill_symlink "design-taste-frontend" "$SCOPE"
   else
     warn "Skipping Taste. Install Node, then re-run with --only design."
   fi
 
   if [ $HAS_NPX -eq 1 ]; then
-    info "Transitions (Jakubantalik/transitions.dev)"
-    run "transitions.dev" npx --yes skills add Jakubantalik/transitions.dev \
-      -a claude-code
+    info "Transitions (Jakubantalik/transitions.dev), scope: $SCOPE"
+    if [ "$SCOPE" = "global" ]; then
+      run "transitions.dev" npx --yes skills add Jakubantalik/transitions.dev \
+        -a claude-code -g
+    else
+      run "transitions.dev" npx --yes skills add Jakubantalik/transitions.dev \
+        -a claude-code
+    fi
+    [ $DRY_RUN -eq 0 ] && ensure_skill_symlink "transitions.dev" "$SCOPE"
+    dim "  (symlink check assumes folder name 'transitions.dev'. If this repo"
+    dim "  installs under a different skill name, the check above may not"
+    dim "  find it. Run: ls ~/.claude/skills/ (or ./.claude/skills/ for local)"
+    dim "  to confirm the real folder name if Transitions doesn't show up.)"
   else
     warn "Skipping Transitions. Install Node, then re-run with --only design."
   fi
@@ -323,7 +409,8 @@ fi
 
 if has_group dev || has_group design; then
   header "Anthropic example skills"
-  info "Source: anthropics/skills"
+  info "Source: anthropics/skills, scope: $SCOPE"
+  info "Destination: $SKILLS_DIR"
 
   if [ $DRY_RUN -eq 1 ]; then
     dim "would clone anthropics/skills and copy: ${ANTHROPIC_SKILLS[*]}"
