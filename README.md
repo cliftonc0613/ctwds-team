@@ -15,7 +15,7 @@ Skills are the tools. Team docs are the org chart and the operating manual for t
 
 ## Tutorial Video
 
-[Watch the walkthrough on Loom](https://www.loom.com/share/8cec334ee1b14439b61ef169608d6ddf)
+<a href="https://www.loom.com/share/8cec334ee1b14439b61ef169608d6ddf" target="_blank" rel="noopener noreferrer">Watch the walkthrough on Loom</a>
 
 ---
 
