@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<!--
+  Keyword Cannibalization Report — AI RANKING DASHBOARD TEMPLATE
+  GENERATED FILE. Do not edit inside a skill folder.
+
+  HOW TO FILL THIS TEMPLATE
+  - Replace every double-brace placeholder with a real value.
+  - Repeatable blocks are marked <!-- BEGIN X --> / <!-- END X -->.
+    Duplicate the inner block once per row. Delete the block if there are no rows
+    and show the .empty state instead.
+  - Do NOT restyle. Do NOT add fonts, colours, or libraries.
+  - Never invent a number. If data is missing write "no data" and say why in
+    {{DATA_NOTES}}.
+-->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{SUBJECT}} · Keyword Cannibalization Report</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,400..600&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   AI RANKING HOUSE STYLE — single source of truth
+   Copied verbatim from the internal-link-architect / ai-visibility-checker
+   templates. Do not restyle per skill.
+   ============================================================ */
+:root{
+  --forest:#1c3a2e; --forest-2:#264c3b; --moss:#5b7a63;
+  --cream:#f4efe2; --cream-2:#ece5d3; --paper:#fbf8f0;
+  --gold:#c08a3e; --rust:#b4522f; --ink:#16241d;
+  --pass:#2f7d4e; --warn:#c08a3e; --fail:#b4522f;
+  --line:rgba(28,58,46,.16);
+  --shadow:0 1px 2px rgba(28,58,46,.06),0 12px 36px -12px rgba(28,58,46,.22);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:"Schibsted Grotesk",system-ui,sans-serif;
+  background:var(--cream); color:var(--ink);
+  line-height:1.55; -webkit-font-smoothing:antialiased;
+  background-image:
+    radial-gradient(1200px 600px at 85% -10%, rgba(192,138,62,.10), transparent 60%),
+    radial-gradient(900px 500px at -10% 110%, rgba(91,122,99,.14), transparent 55%);
+}
+body::before{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:9;opacity:.04;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+.wrap{max-width:980px;margin:0 auto;padding:0 28px}
+.reveal{opacity:0;transform:translateY(18px);animation:rise .8s cubic-bezier(.2,.7,.2,1) forwards}
+@keyframes rise{to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.reveal{animation:none;opacity:1;transform:none}}
+
+/* ---------- header ---------- */
+header.top{background:linear-gradient(160deg,var(--forest),var(--forest-2));color:var(--cream);position:relative;overflow:hidden}
+header.top::after{content:"";position:absolute;right:-120px;top:-120px;width:420px;height:420px;border-radius:50%;
+  background:radial-gradient(circle at center, rgba(192,138,62,.45), transparent 65%)}
+.top .wrap{padding:54px 28px 46px;position:relative;z-index:2}
+.brandrow{display:flex;justify-content:space-between;align-items:center;font-size:.78rem;letter-spacing:.22em;text-transform:uppercase;color:rgba(244,239,226,.7)}
+.brandrow b{color:var(--cream);font-weight:600}
+h1{font-family:"Fraunces",serif;font-weight:500;font-size:clamp(2.4rem,6vw,4rem);line-height:1.02;margin:26px 0 6px;letter-spacing:-.01em}
+h1 em{font-style:italic;color:#e7c690}
+.sub{font-size:1.02rem;color:rgba(244,239,226,.82);max-width:52ch}
+.datechip{display:inline-flex;gap:.5rem;align-items:center;margin-top:22px;background:rgba(244,239,226,.12);border:1px solid rgba(244,239,226,.25);padding:.5rem .9rem;border-radius:999px;font-size:.82rem;letter-spacing:.04em}
+.datechip span{width:7px;height:7px;border-radius:50%;background:#7bd39a;box-shadow:0 0 0 4px rgba(123,211,154,.18)}
+
+/* ---------- KPI band ---------- */
+.heroband{background:var(--paper);border-bottom:1px solid var(--line)}
+.heroband .wrap{display:grid;grid-template-columns:repeat(4,1fr);gap:0;padding:0}
+.stat{padding:30px 22px;border-right:1px solid var(--line);position:relative}
+.stat:last-child{border-right:none}
+.stat .k{font-family:"Fraunces",serif;font-weight:500;font-size:clamp(1.9rem,4.4vw,2.9rem);line-height:1;color:var(--forest);letter-spacing:-.02em}
+.stat .l{font-size:.74rem;letter-spacing:.14em;text-transform:uppercase;color:var(--moss);margin-top:10px}
+.stat .w{font-size:.72rem;color:#9a9684;margin-top:3px}
+.stat.is-fail .k{color:var(--fail)}
+.stat.is-warn .k{color:var(--warn)}
+.stat.is-pass .k{color:var(--pass)}
+@media(max-width:720px){.heroband .wrap{grid-template-columns:repeat(2,1fr)}.stat:nth-child(2){border-right:none}.stat:nth-child(1),.stat:nth-child(2){border-bottom:1px solid var(--line)}}
+
+/* ---------- sections ---------- */
+main{padding:60px 0 30px}
+section{margin-bottom:58px}
+.seclabel{display:flex;align-items:baseline;gap:14px;margin-bottom:22px}
+.seclabel .num{font-family:"Fraunces",serif;font-style:italic;color:var(--gold);font-size:1.1rem}
+.seclabel h2{font-family:"Fraunces",serif;font-weight:500;font-size:1.85rem;letter-spacing:-.01em;color:var(--forest)}
+.seclabel .win{margin-left:auto;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--moss);border:1px solid var(--line);padding:.3rem .7rem;border-radius:999px}
+.meaning{background:var(--cream-2);border-left:3px solid var(--gold);padding:14px 18px;border-radius:0 10px 10px 0;font-size:.95rem;margin-top:18px;color:#3a4a40}
+.meaning b{color:var(--forest)}
+.note{font-size:.9rem;color:#6c7a6f}
+
+/* ---------- panel / kv ---------- */
+.panel{background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:30px;box-shadow:var(--shadow)}
+.kv{display:grid;grid-template-columns:180px 1fr;gap:10px 18px;font-size:.92rem}
+.kv dt{font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--moss);padding-top:3px}
+.kv dd{color:var(--ink);word-break:break-word}
+
+/* ---------- tables ---------- */
+.tbl{width:100%;border-collapse:collapse;background:var(--paper);border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:var(--shadow);margin-top:6px}
+.tbl th{text-align:left;font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--moss);padding:14px 18px;background:var(--cream-2);border-bottom:1px solid var(--line)}
+.tbl td{padding:13px 18px;border-bottom:1px solid var(--line);font-size:.92rem;vertical-align:top}
+.tbl tr:last-child td{border-bottom:none}
+.tbl td.q{font-weight:500;color:var(--ink)}
+.tbl td.num{font-family:"Fraunces",serif;font-weight:600;font-size:1.02rem;white-space:nowrap}
+.scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+
+/* ---------- badges + status ---------- */
+.st{display:inline-flex;align-items:center;gap:.4rem;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;font-weight:600;white-space:nowrap}
+.st::before{content:"";width:9px;height:9px;border-radius:50%;flex:none}
+.st.pass{color:var(--pass)}      .st.pass::before{background:var(--pass);box-shadow:0 0 0 3px rgba(47,125,78,.15)}
+.st.warn{color:var(--warn)}      .st.warn::before{background:var(--warn);box-shadow:0 0 0 3px rgba(192,138,62,.15)}
+.st.fail{color:var(--fail)}      .st.fail::before{background:var(--fail);box-shadow:0 0 0 3px rgba(180,82,47,.15)}
+.st.na{color:#9a9684}            .st.na::before{background:#c9c4b3}
+
+/* ---------- empty state ---------- */
+.empty{background:var(--cream-2);border:1px dashed var(--line);border-radius:14px;padding:28px;text-align:center;color:#6c7a6f}
+.empty b{display:block;font-family:"Fraunces",serif;font-size:1.2rem;color:var(--forest);margin-bottom:6px}
+
+/* ---------- footer ---------- */
+footer{padding:40px 0 70px;color:#7d8a7f;font-size:.82rem}
+footer .wrap{border-top:1px solid var(--line);padding-top:26px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
+
+/* ---------- print ---------- */
+@media print{
+  body::before{display:none}
+  section{page-break-inside:avoid}
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap reveal">
+    <div class="brandrow"><span>Cannibalization</span><b>AI Ranking</b></div>
+    <h1>{{HEADLINE}}</h1>
+    <p class="sub">{{SUBHEAD}}</p>
+    <div class="datechip"><span></span>{{SUBJECT}} · generated {{RUN_DATE}}</div>
+  </div>
+</header>
+
+<div class="heroband">
+  <div class="wrap">
+    <div class="stat"><div class="k">{{PAGES_SCANNED}}</div><div class="l">Pages scanned</div><div class="w">{{DOMAIN}}</div></div>
+    <div class="stat {{CONFIRMED_CLASS}}"><div class="k">{{CONFIRMED_COUNT}}</div><div class="l">Confirmed cannibalization</div><div class="w">exact duplicate or dual-ranking</div></div>
+    <div class="stat {{WATCH_CLASS}}"><div class="k">{{WATCH_COUNT}}</div><div class="l">Watch pairs</div><div class="w">shared entity, differentiated intent</div></div>
+    <div class="stat"><div class="k">{{EXACT_DUP_COUNT}}</div><div class="l">Exact title/meta duplicates</div><div class="w">of the confirmed total above</div></div>
+  </div>
+</div>
+
+<main class="wrap">
+  <section class="reveal">
+    <div class="seclabel"><span class="num">01</span><h2>How this was run</h2></div>
+    <div class="panel">
+      <dl class="kv">
+        <dt>Domain</dt><dd><b>{{DOMAIN}}</b></dd>
+        <dt>Inventory method</dt><dd>{{INVENTORY_METHOD}}</dd>
+        <dt>Pages scanned</dt><dd>{{PAGES_SCANNED}}</dd>
+        <dt>SERP cross-check</dt><dd>{{SERP_CHECK_STATUS}}</dd>
+      </dl>
+      <div class="meaning"><b>Only Confirmed pairs are findings.</b> {{METHOD_NOTE}}</div>
+    </div>
+  </section>
+
+  <section class="reveal">
+    <div class="seclabel"><span class="num">02</span><h2>Exact title/meta duplicates</h2><span class="win">{{EXACT_DUP_COUNT}} found</span></div>
+    <p class="note" style="margin-bottom:14px">Two or more pages with the identical title tag or meta description — Google has no signal to prefer one over the other.</p>
+    <div class="scroll">
+    <table class="tbl">
+      <thead><tr><th>Duplicate title / description</th><th>URLs affected</th></tr></thead>
+      <tbody>
+      <!-- BEGIN EXACT_DUP_ROW -->
+        <tr><td class="q">{{ROW_TITLE}}</td><td>{{ROW_URLS}}</td></tr>
+      <!-- END EXACT_DUP_ROW -->
+      </tbody>
+    </table>
+    </div>
+    <div class="empty" style="margin-top:14px;display:{{EXACT_DUP_EMPTY_DISPLAY}}">
+      <b>No exact duplicates found</b>
+      Every page scanned has a unique title tag and meta description.
+    </div>
+  </section>
+
+  <section class="reveal">
+    <div class="seclabel"><span class="num">03</span><h2>Confirmed cannibalization</h2><span class="win">{{CONFIRMED_COUNT}} pairs</span></div>
+    <p class="note" style="margin-bottom:14px">Exact duplicates from section 02, plus pairs where real ranking data shows two of this site's own URLs already competing for the same query.</p>
+    <div class="scroll">
+    <table class="tbl">
+      <thead><tr><th>Page A</th><th>Page B</th><th>Query / entity</th><th>Evidence</th><th>Recommended fix</th></tr></thead>
+      <tbody>
+      <!-- BEGIN CONFIRMED_ROW -->
+        <tr>
+          <td class="q">{{ROW_PAGE_A}}</td>
+          <td class="q">{{ROW_PAGE_B}}</td>
+          <td>{{ROW_QUERY}}</td>
+          <td><span class="st fail">{{ROW_EVIDENCE_LABEL}}</span><br>{{ROW_EVIDENCE}}</td>
+          <td>{{ROW_FIX}}</td>
+        </tr>
+      <!-- END CONFIRMED_ROW -->
+      </tbody>
+    </table>
+    </div>
+    <div class="empty" style="margin-top:14px;display:{{CONFIRMED_EMPTY_DISPLAY}}">
+      <b>No confirmed cannibalization</b>
+      No exact duplicates and no evidence of two owned URLs competing for the same query.
+    </div>
+  </section>
+
+  <section class="reveal">
+    <div class="seclabel"><span class="num">04</span><h2>Watch — shared entity, different intent</h2><span class="win">{{WATCH_COUNT}} pairs</span></div>
+    <p class="note" style="margin-bottom:14px">Pages that share a service, location, or topic but target different search intent — the normal hub-and-spoke pattern. Not a problem, worth knowing about.</p>
+    <div class="scroll">
+    <table class="tbl">
+      <thead><tr><th>Page A</th><th>Page B</th><th>Shared entity</th><th>Why this is OK</th></tr></thead>
+      <tbody>
+      <!-- BEGIN WATCH_ROW -->
+        <tr>
+          <td class="q">{{ROW_PAGE_A}}</td>
+          <td class="q">{{ROW_PAGE_B}}</td>
+          <td>{{ROW_SHARED_ENTITY}}</td>
+          <td><span class="st warn">watch</span><br>{{ROW_WHY_OK}}</td>
+        </tr>
+      <!-- END WATCH_ROW -->
+      </tbody>
+    </table>
+    </div>
+    <div class="empty" style="margin-top:14px;display:{{WATCH_EMPTY_DISPLAY}}">
+      <b>No watch pairs identified</b>
+      No pages share both entity and overlapping intent closely enough to note.
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>Data: {{DATA_SOURCE_LABEL}}</span>
+    <span>keyword-cannibalization-checker · generated {{RUN_DATE}}</span>
+  </div>
+  <div class="wrap" style="border:none;padding-top:14px">
+    <p class="note">{{DATA_NOTES}}</p>
+  </div>
+</footer>
+
+</body>
+</html>

@@ -10,7 +10,14 @@
 #   bash install-claude-company-os.sh --skip dev
 #   bash install-claude-company-os.sh --scope local   # this project only, not every project
 #
-# Groups: work (small business + legal + finance), marketing, social, dev, design
+# Groups: work (small business + legal + finance), marketing, social, dev, design, seo
+#
+# Note on seo: the SEO department's core `/seo`, `/blog`, `/ads` engines are not
+# installed by this script (no public marketplace to pull them from — install
+# those separately). The `seo` group here only covers the newer standalone SEO
+# skills bundled in this repo under skills/seo/ (the 5-skill AI-citation
+# pipeline, competitive intelligence, reporting, and setup skills). See
+# seo-skills.md for the full skill reference.
 #
 # Requires: claude CLI, git. Node 22.12+ needed for Impeccable and Transitions.
 #
@@ -25,7 +32,8 @@
 #     it reads that project's actual tokens and components.
 #   - 97-dev uses its own installer, whose scope behavior isn't confirmed
 #     here, so --scope does not touch it either.
-# What it DOES affect: Taste, Transitions, and the 4 Anthropic example skills.
+# What it DOES affect: Taste, Transitions, the 4 Anthropic example skills, and
+# the 12 bundled SEO skills.
 # Local means these are only visible in whatever project you run this from.
 
 set -uo pipefail
@@ -34,7 +42,7 @@ set -uo pipefail
 # Config
 # ---------------------------------------------------------------------------
 
-ALL_GROUPS="work marketing social dev design"
+ALL_GROUPS="work marketing social dev design seo"
 SELECTED_GROUPS="$ALL_GROUPS"
 DRY_RUN=0
 SCOPE="global"
@@ -52,6 +60,25 @@ ANTHROPIC_SKILLS=(
   "mcp-builder"
   "web-artifacts-builder"
   "brand-guidelines"
+)
+
+# Standalone SEO skills bundled directly in this repo (skills/seo/), no
+# marketplace or plugin exists for these yet. Keep in sync with seo-skills.md
+# sections 9-12.
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+BUNDLED_SEO_SKILLS=(
+  "keyword-fanout-map"
+  "seo-content-writer"
+  "onpage-optimizer"
+  "internal-link-architect"
+  "ai-visibility-checker"
+  "keyword-cannibalization-checker"
+  "competitor-analysis"
+  "competitive-landscape"
+  "weekly-seo-report"
+  "link-prospecting"
+  "seo-project-setup"
+  "seo-strategy"
 )
 
 # ---------------------------------------------------------------------------
@@ -210,7 +237,7 @@ ensure_skill_symlink() {
 header "Claude Company OS Installer"
 [ $DRY_RUN -eq 1 ] && warn "DRY RUN. Nothing will be installed."
 info "Groups: $(echo $SELECTED_GROUPS | tr ' ' ',')"
-info "Scope: $SCOPE (affects Taste, Transitions, and the Anthropic example skills only)"
+info "Scope: $SCOPE (affects Taste, Transitions, the Anthropic example skills, and the bundled SEO skills only)"
 
 header "Checking prerequisites"
 
@@ -435,6 +462,43 @@ if has_group dev || has_group design; then
       FAILED+=("anthropics/skills clone")
     fi
   fi
+fi
+
+# ---------------------------------------------------------------------------
+# 7. SEO (bundled skills, direct copy — no marketplace exists for these yet)
+# ---------------------------------------------------------------------------
+
+if has_group seo; then
+  header "SEO (bundled skills)"
+  info "Source: this repo's skills/seo/, scope: $SCOPE"
+  info "Destination: $SKILLS_DIR"
+  dim "Covers the newer standalone SEO skills only. The core /seo, /blog, /ads"
+  dim "content engines are a separate install — see README.md."
+
+  SEO_SRC_DIR="$SCRIPT_DIR/skills/seo"
+  if [ ! -d "$SEO_SRC_DIR" ]; then
+    err "skills/seo/ not found next to this script. Skipping."
+    FAILED+=("seo skills bundle")
+  else
+    for skill in "${BUNDLED_SEO_SKILLS[@]}"; do
+      SRC="$SEO_SRC_DIR/$skill"
+      if [ ! -d "$SRC" ]; then
+        err "$skill not found in skills/seo/. It may have been renamed."
+        FAILED+=("$skill")
+        continue
+      fi
+      if [ $DRY_RUN -eq 1 ]; then
+        dim "would copy $skill to $SKILLS_DIR/$skill"
+        continue
+      fi
+      rm -rf "${SKILLS_DIR:?}/$skill"
+      cp -R "$SRC" "$SKILLS_DIR/$skill"
+      ok "$skill"
+      SUCCEEDED+=("$skill")
+    done
+  fi
+else
+  SKIPPED+=("seo")
 fi
 
 # ---------------------------------------------------------------------------

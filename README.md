@@ -120,7 +120,7 @@ Every department follows the same two-file pattern: `<name>-skills.md` is the re
 | ---------- | ------ | -------- |
 | Marketing | 8 | `coreyhaines31/marketingskills` |
 | Blog | 8 | `/blog` content engine |
-| SEO | 8 | `/seo` engine |
+| SEO | 8 | `/seo` engine + 12 bundled skills (`install-claude-company-os.sh --only seo`) |
 | Ads | 8 | `/ads` engine |
 | Work | 3 | `anthropics/knowledge-work-plugins` |
 | Social | 3 | `charlie947/social-media-skills` |
@@ -130,6 +130,8 @@ Every department follows the same two-file pattern: `<name>-skills.md` is the re
 `dev` (Superpowers, Context7, Claude-Mem, 97-dev) is infrastructure — debugging discipline, doc lookup, session memory — not a client-facing department, so it has no team doc.
 
 `astro-business-builder` (site scaffolding, `cliftonc0613/astro-business-builder` — installed separately, not part of `install-claude-company-os.sh`) is grouped alongside `dev` for the same reason: it's a capability invoked directly for a task, not a department with agents, cadence, or handoffs. Reference: `site-builder-skills.md`.
+
+The SEO department's core `/seo`, `/blog`, and `/ads` content engines have no public marketplace and are not installed by this script — get those separately. The 12 newer standalone SEO skills (the AI-citation pipeline, competitive intelligence, reporting, and setup skills described in `seo-skills.md` §9-12) have no marketplace either, so they're bundled directly in this repo under `skills/seo/` and copied into place by the `seo` group: `bash install-claude-company-os.sh --only seo`.
 
 ### Reading one team doc
 
