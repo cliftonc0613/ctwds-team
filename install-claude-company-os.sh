@@ -487,12 +487,22 @@ if has_group seo; then
         FAILED+=("$skill")
         continue
       fi
-      if [ $DRY_RUN -eq 1 ]; then
-        dim "would copy $skill to $SKILLS_DIR/$skill"
+      DEST="$SKILLS_DIR/$skill"
+      if [ -d "$DEST" ] && diff -rq "$SRC" "$DEST" >/dev/null 2>&1; then
+        ok "$skill (already installed, skipped)"
+        SUCCEEDED+=("$skill")
         continue
       fi
-      rm -rf "${SKILLS_DIR:?}/$skill"
-      cp -R "$SRC" "$SKILLS_DIR/$skill"
+      if [ $DRY_RUN -eq 1 ]; then
+        if [ -d "$DEST" ]; then
+          dim "would update $skill at $DEST (contents differ from repo)"
+        else
+          dim "would copy $skill to $DEST"
+        fi
+        continue
+      fi
+      rm -rf "${DEST:?}"
+      cp -R "$SRC" "$DEST"
       ok "$skill"
       SUCCEEDED+=("$skill")
     done
