@@ -43,3 +43,29 @@
 - `dataforseo [cmd]` — Live SERP, keyword, and backlink data via DataForSEO MCP
 - `image-gen <desc>` — AI image generation for OG previews and infographics via Google Gemini
 - `firecrawl [cmd]` — Full-site crawling with JavaScript rendering
+
+## 9. AI-Citation Content Pipeline (5-Skill System)
+
+Five skills designed to chain in order — seed keyword to AI-citation tracking.
+
+- `keyword-fanout-map <seed>` — **Step 1.** Turns a seed keyword/business type/topic into an intent-clustered keyword map with real search volume, AI search volume, and the fan-out questions a page must answer
+- `seo-content-writer <brief>` — **Step 2.** Writes a blog post, article, service page, or product page built to rank and to be cited by AI search engines, using the keyword map from Step 1 and brand voice from `site-brief.md`
+- `onpage-optimizer <url>` — **Step 3.** Detects blog vs. service/product page, applies the matching checklist, and rewrites title tag, meta description, headings, and schema
+- `internal-link-architect <url>` — **Step 4.** Crawls existing pages and returns exactly which pages should link to the target (and vice versa) with anchor text and placement sentence; also finds orphan pages and maps topic clusters
+- `ai-visibility-checker <url>` — **Step 5.** Checks whether a site is cited/mentioned in ChatGPT, Gemini, Google AI Overviews, and Perplexity, benchmarks against competitors, and produces a gap list of queries it should own but doesn't
+- `keyword-cannibalization-checker <url>` — **Companion** (run after Steps 1 and 4). Builds a full page inventory, finds duplicate titles/metas, clusters pages by target keyword/intent, and cross-checks against ranked-keyword data to separate confirmed cannibalization from healthy hub-and-spoke overlap
+
+## 10. Competitive Intelligence
+
+- `competitor-analysis <competitor-url>` — Analyze one competitor's organic footprint: ranking keywords, content themes, backlinks, and gaps
+- `competitive-landscape <niche>` — Map SEO market leaders across a niche: winning content themes, keyword coverage, backlinks, and strategic gaps
+
+## 11. Reporting & Outreach
+
+- `weekly-seo-report` — Generate a styled weekly/monthly SEO progress report as an editorial print-style PDF or interactive dark-theme HTML dashboard; auto-reads project tracking files and business profile
+- `link-prospecting <niche>` — Find link prospects, discover contact paths, and draft outreach from SERPs and backlink signals
+
+## 12. Setup & Alternatives
+
+- `seo-project-setup` — Set up a durable local SEO workspace: project context, notes, goals, positioning, preferences, MCP checks, and Search Console data intake
+- `seo-strategy <article-or-site>` — Dual-mode skill: Mode 1 optimizes a single article/page for SEO; Mode 2 runs a full-website audit. Overlaps with `audit`/`page` — evaluate before replacing them

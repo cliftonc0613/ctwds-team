@@ -30,6 +30,8 @@ Full audits deploy up to 18 parallel AI agents under the hood.
 
 > No installed skill does dedicated baseline-diff drift monitoring (the old `seo drift` placeholder had no real equivalent) — `seo-technical`/`seo-audit` re-runs are the closest substitute; comparing scores/issues run-over-run is manual.
 
+> `seo-strategy` (Mode 2: full-website audit) overlaps `seo-audit`/`seo-page` — worth a bake-off, not yet adopted as a replacement.
+
 ### Key Outputs
 - Weekly 0-100 site health score report
 - Prioritized technical issue tracker (severity-ranked)
@@ -46,7 +48,7 @@ Full audits deploy up to 18 parallel AI agents under the hood.
 
 **Specialty:** Content quality, search experience optimization, and evidence-led frameworks
 
-**Skills:** `seo-content`
+**Skills:** `seo-content`, `keyword-fanout-map`, `seo-content-writer`, `onpage-optimizer`, `internal-link-architect`, `keyword-cannibalization-checker`
 
 ### Daily Tasks
 | Task | Skill | Description |
@@ -54,6 +56,7 @@ Full audits deploy up to 18 parallel AI agents under the hood.
 | E-E-A-T spot check | `seo-content` | Audit 1-2 pages published in last 24 hours against 2025 Quality Rater Guidelines |
 | SERP experience scan | `seo-content` | Review SERP for priority keywords and flag format shifts (featured snippets, AI Overviews) |
 | FLOW prompt application | `blog-flow` | Apply one evidence-led FLOW prompt to the day's highest-priority optimization target |
+| On-page fix pass | `onpage-optimizer` | Audit/rewrite title, meta, headings, and schema for 1-2 pages flagged the prior day |
 
 ### Weekly Tasks
 | Task | Skill | Description |
@@ -63,8 +66,12 @@ Full audits deploy up to 18 parallel AI agents under the hood.
 | FLOW framework review | `blog-flow` | Run all four stages (Find, Leverage, Optimize, Win) across priority content |
 | Content quality scorecard | `seo-content` | Weekly average E-E-A-T score with category breakdowns |
 | Thin content identification | `seo-content` | Flag pages below quality threshold for rewrite or consolidation |
+| Keyword map refresh | `keyword-fanout-map` | Turn priority seed keywords into intent-clustered maps with search volume and fan-out questions for new/refreshed content |
+| New content production | `seo-content-writer` | Write pages/posts built to rank and be AI-cited, using the current keyword map and brand voice |
+| Internal link pass | `internal-link-architect` | Plan exact internal links (anchor text + placement) for newly published or rewritten pages; find orphan pages |
+| Cannibalization check | `keyword-cannibalization-checker` | Cross-check page inventory against ranked-keyword data to catch pages competing against each other |
 
-> No dedicated `seo sxo` skill is installed — SERP-format analysis is folded into `seo-content`. `seo flow` doesn't exist either; `blog-flow` is the closest real skill (built for blog content, but the FLOW methodology applies to any page).
+> No dedicated `seo sxo` skill is installed — SERP-format analysis is folded into `seo-content`. `seo flow` doesn't exist either; `blog-flow` is the closest real skill (built for blog content, but the FLOW methodology applies to any page). The `keyword-fanout-map` → `seo-content-writer` → `onpage-optimizer` → `internal-link-architect` → `ai-visibility-checker` chain (see Agent 4) is a separate 5-skill pipeline this agent and Agent 4 share — steps 2-4 live here, steps 1 and 5 bookend it.
 
 ### Key Outputs
 - Weekly E-E-A-T scorecard (per page and site-wide average)
@@ -116,7 +123,7 @@ Full audits deploy up to 18 parallel AI agents under the hood.
 
 **Specialty:** GEO/AEO optimization, topic clustering, and strategic planning
 
-**Skills:** `seo-geo`, `blog-cluster`, `seo-plan`
+**Skills:** `seo-geo`, `blog-cluster`, `seo-plan`, `ai-visibility-checker`
 
 ### Daily Tasks
 | Task | Skill | Description |
@@ -133,8 +140,9 @@ Full audits deploy up to 18 parallel AI agents under the hood.
 | Strategic plan | `seo-plan` | Run industry-specific planning with competitive analysis and content pillar mapping |
 | AI search readiness scorecard | `seo-geo` | Weekly citation readiness scores with per-page recommendations |
 | Cluster coverage report | `blog-cluster` | Map existing content to cluster slots; flag missing spoke pages |
+| AI citation gap check | `ai-visibility-checker` | Verify actual citation/mention status across ChatGPT, Gemini, AI Overviews, and Perplexity vs. competitors; produce the gap list of queries the site should own but doesn't |
 
-> No `seo cluster` skill is installed — `blog-cluster` is the closest real skill (built for blog content, but the hub-and-spoke methodology applies to any page type).
+> No `seo cluster` skill is installed — `blog-cluster` is the closest real skill (built for blog content, but the hub-and-spoke methodology applies to any page type). `ai-visibility-checker` is Step 5 of the 5-skill pipeline that starts with Agent 2's `keyword-fanout-map` — it closes the loop by verifying whether the optimization work actually earned citations.
 
 ### Key Outputs
 - Weekly AI search readiness scorecard (GEO score per page)
@@ -220,7 +228,7 @@ Full audits deploy up to 18 parallel AI agents under the hood.
 
 **Specialty:** Competitor positioning, programmatic SEO, and e-commerce optimization
 
-**Skills:** `seo-competitor-pages`, `seo-programmatic`, `seo-schema`
+**Skills:** `seo-competitor-pages`, `seo-programmatic`, `seo-schema`, `competitor-analysis`, `competitive-landscape`
 
 ### Daily Tasks
 | Task | Skill | Description |
@@ -237,8 +245,10 @@ Full audits deploy up to 18 parallel AI agents under the hood.
 | E-commerce SEO review | `seo-schema` | Full product schema audit, Google Shopping visibility check, and pricing intelligence |
 | New comparison page briefs | `seo-competitor-pages` | Brief 2-3 new comparison pages based on competitor keyword movements |
 | Programmatic template expansion | `seo-programmatic` | Identify new template opportunities (location pages, use-case pages, integration pages) |
+| Single-competitor deep dive | `competitor-analysis` | Analyze one priority competitor's organic footprint: ranking keywords, content themes, backlinks, gaps — feeds the comparison page briefs |
+| Market landscape map | `competitive-landscape` | Map SEO market leaders in the niche: winning content themes, keyword coverage, backlinks, strategic gaps |
 
-> No dedicated `seo ecommerce` skill is installed — `seo-schema` covers the Product/Offer JSON-LD portion; Google Shopping visibility and pricing intelligence have no installed-skill equivalent.
+> No dedicated `seo ecommerce` skill is installed — `seo-schema` covers the Product/Offer JSON-LD portion; Google Shopping visibility and pricing intelligence have no installed-skill equivalent. `competitor-analysis`/`competitive-landscape` do the research that `seo-competitor-pages` previously had to assume — run them first when briefing new comparison pages.
 
 ### Key Outputs
 - Comparison and "alternatives to" page drafts
@@ -257,7 +267,7 @@ Full audits deploy up to 18 parallel AI agents under the hood.
 
 **Specialty:** Google API integrations, backlink intelligence, live SERP data, and SEO asset generation
 
-**Skills:** `seo-technical`, `seo-backlinks`, `local-seo-keyword-report`, `blog-image`
+**Skills:** `seo-technical`, `seo-backlinks`, `local-seo-keyword-report`, `blog-image`, `link-prospecting`, `weekly-seo-report`
 
 ### Daily Tasks
 | Task | Skill | Description |
@@ -274,8 +284,10 @@ Full audits deploy up to 18 parallel AI agents under the hood.
 | Keyword intelligence report | `local-seo-keyword-report` | Live keyword ranking, volume, and competitor data for Strategy Lead's planning session |
 | Full-site crawl | — | JavaScript-rendered full-site crawl via the Firecrawl MCP tools (`firecrawl_crawl`/`firecrawl_map`), not a skill |
 | SEO asset generation | `blog-image` | Generate OG preview images and infographics for top-performing posts and landing pages |
+| Link prospecting pass | `link-prospecting` | Find new link prospects, contact paths, and draft outreach from SERP and backlink signals — closes the loop the toxic-link monitor only covers defensively |
+| Client report generation | `weekly-seo-report` | Compile the week's audit scores, backlinks, citations, and content into a styled PDF or HTML dashboard for the Weekly Sync |
 
-> `seo google` / `seo dataforseo` / `seo image-gen` / `seo firecrawl` were never real skills. Substituted: `seo-technical` (has PSI/CrUX/GSC checks built in), `local-seo-keyword-report` (DataForSEO-backed, though scoped for local-business keyword research), `blog-image` (general image generation, not SEO-specific), and the Firecrawl MCP tools directly (no skill wraps them).
+> `seo google` / `seo dataforseo` / `seo image-gen` / `seo firecrawl` were never real skills. Substituted: `seo-technical` (has PSI/CrUX/GSC checks built in), `local-seo-keyword-report` (DataForSEO-backed, though scoped for local-business keyword research), `blog-image` (general image generation, not SEO-specific), and the Firecrawl MCP tools directly (no skill wraps them). `weekly-seo-report` is new — it's the first skill that actually produces the "Weekly report" outputs other agents only described.
 
 ### Key Outputs
 - Weekly Google performance report (PSI, CrUX, GSC, GA4 organic)
@@ -283,6 +295,8 @@ Full audits deploy up to 18 parallel AI agents under the hood.
 - Live SERP ranking report (position changes, SERP feature wins/losses)
 - Full-site crawl report (JavaScript rendering issues, dynamic content gaps)
 - SEO image asset library (OG images, infographics)
+- Link prospect + outreach list
+- Styled weekly/monthly client report (PDF or dashboard)
 
 ### Handoffs
 - **Receives from:** All agents (data requests and reporting needs)
