@@ -23,6 +23,14 @@
 #
 # Note: Impeccable and Taste both install into the Designers group. They
 # overlap on frontend design, so try both and drop whichever you don't use.
+# The Designers group also installs a second wave of skills direct-copied
+# from GitHub (no marketplace): web-design-engineer, landing-page-design,
+# tastemaker, build-awwwards-quality-sites, video-to-superprompt,
+# web-technique-to-skill, interface-review, better-writing, better-layout,
+# animate, emil-design-eng, and the full Owl-Listener/designer-skills
+# collection (visual-critique + 7 more plugin bundles, ~110 skills plus
+# slash commands). See design-skills.md's "Second Wave" section for the
+# full breakdown and how they map onto ai-design-team.md's 3 agents.
 #
 # --scope local|global (default: global). This only affects skills that
 # genuinely support both. What it does NOT affect:
@@ -60,6 +68,38 @@ ANTHROPIC_SKILLS=(
   "mcp-builder"
   "web-artifacts-builder"
   "brand-guidelines"
+)
+
+# Second-wave design skills (direct copy from GitHub repos, no marketplace).
+# Format per entry: "owner/repo|path/in/repo|dest-skill-name"
+# Kept in sync with the "Second Wave" section of design-skills.md.
+SECOND_WAVE_SIMPLE_SKILLS=(
+  "emilkowalski/skills|skills/emil-design-eng|emil-design-eng"
+  "emilkowalski/skills|skills/animate|animate"
+  "ConardLi/garden-skills|skills/web-design-engineer|web-design-engineer"
+  "elayadesign/ai-design-skills|skills/landing-page-design|landing-page-design"
+  "MengTo/Skills|agent-skills/codex/video-to-superprompt|video-to-superprompt"
+  "MengTo/Skills|agent-skills/codex/web-technique-to-skill|web-technique-to-skill"
+  "MengTo/Skills|agent-skills/web-design/build-awwwards-quality-sites|build-awwwards-quality-sites"
+  "jakubkrehel/skills|skills/interface-review|interface-review"
+  "jakubkrehel/skills|skills/better-writing|better-writing"
+  "jakubkrehel/skills|skills/better-layout|better-layout"
+  "codeswithroh/tastemaker|skills/tastemaker|tastemaker"
+)
+
+# Owl-Listener/designer-skills ships as plugin bundles, each with its own
+# skills/<name>/ subfolders and commands/*.md. Copied dynamically (not a
+# hardcoded skill list) so new skills added upstream come along automatically.
+DESIGNER_SKILLS_PLUGINS=(
+  "visual-critique"
+  "design-ops"
+  "design-research"
+  "design-systems"
+  "designer-toolkit"
+  "interaction-design"
+  "prototyping-testing"
+  "ui-design"
+  "ux-strategy"
 )
 
 # Standalone SEO skills bundled directly in this repo (skills/seo/), no
@@ -142,8 +182,10 @@ has_group() {
 
 if [ "$SCOPE" = "global" ]; then
   SKILLS_DIR="${HOME}/.claude/skills"
+  COMMANDS_DIR="${HOME}/.claude/commands"
 else
   SKILLS_DIR="./.claude/skills"
+  COMMANDS_DIR="./.claude/commands"
 fi
 
 # ---------------------------------------------------------------------------
@@ -428,6 +470,109 @@ if has_group design; then
   dim "you don't reach for. Neither uninstall damages your project files."
 else
   SKIPPED+=("design")
+fi
+
+# ---------------------------------------------------------------------------
+# 5b. Second-wave design skills (direct copy from GitHub repos, no marketplace)
+# ---------------------------------------------------------------------------
+
+if has_group design; then
+  header "Second-wave design skills"
+  info "Simple single-skill repos, scope: $SCOPE"
+  info "Destination: $SKILLS_DIR"
+
+  declare -A REPO_CLONE_DIR
+
+  for entry in "${SECOND_WAVE_SIMPLE_SKILLS[@]}"; do
+    IFS='|' read -r repo srcpath destname <<< "$entry"
+
+    if [ $DRY_RUN -eq 1 ]; then
+      dim "would clone $repo, copy $srcpath -> $SKILLS_DIR/$destname"
+      continue
+    fi
+
+    clone_dir="${REPO_CLONE_DIR[$repo]:-}"
+    if [ -z "$clone_dir" ]; then
+      clone_dir="$TMP_DIR/$(printf '%s' "$repo" | tr '/' '-')"
+      if git clone --depth 1 --quiet "https://github.com/${repo}.git" \
+          "$clone_dir" >>"$TMP_DIR/install.log" 2>&1; then
+        REPO_CLONE_DIR[$repo]="$clone_dir"
+      else
+        err "Could not clone $repo. Skipping its skills."
+        FAILED+=("$repo clone")
+        REPO_CLONE_DIR[$repo]="__failed__"
+        continue
+      fi
+    elif [ "$clone_dir" = "__failed__" ]; then
+      continue
+    fi
+
+    SRC="$clone_dir/$srcpath"
+    if [ -d "$SRC" ]; then
+      rm -rf "${SKILLS_DIR:?}/$destname"
+      mkdir -p "$SKILLS_DIR"
+      cp -R "$SRC" "$SKILLS_DIR/$destname"
+      ok "$destname"
+      SUCCEEDED+=("$destname")
+    else
+      err "$srcpath not found in $repo. It may have been renamed upstream."
+      FAILED+=("$destname")
+    fi
+  done
+
+  info "Owl-Listener/designer-skills bundles (skills + commands), scope: $SCOPE"
+  info "Skill destination: $SKILLS_DIR"
+  info "Command destination: $COMMANDS_DIR"
+
+  if [ $DRY_RUN -eq 1 ]; then
+    dim "would clone Owl-Listener/designer-skills and copy skills/commands from: ${DESIGNER_SKILLS_PLUGINS[*]}"
+  else
+    ds_clone_dir="$TMP_DIR/designer-skills"
+    if git clone --depth 1 --quiet \
+        https://github.com/Owl-Listener/designer-skills.git \
+        "$ds_clone_dir" >>"$TMP_DIR/install.log" 2>&1; then
+      mkdir -p "$SKILLS_DIR" "$COMMANDS_DIR"
+      for plugin in "${DESIGNER_SKILLS_PLUGINS[@]}"; do
+        plugin_dir="$ds_clone_dir/$plugin"
+        if [ ! -d "$plugin_dir" ]; then
+          err "$plugin not found in designer-skills. It may have been renamed upstream."
+          FAILED+=("designer-skills/$plugin")
+          continue
+        fi
+
+        if [ -d "$plugin_dir/skills" ]; then
+          for skill_dir in "$plugin_dir"/skills/*/; do
+            [ -d "$skill_dir" ] || continue
+            skill_name="$(basename "$skill_dir")"
+            rm -rf "${SKILLS_DIR:?}/$skill_name"
+            cp -R "$skill_dir" "$SKILLS_DIR/$skill_name"
+            ok "$skill_name"
+            SUCCEEDED+=("$skill_name")
+          done
+        fi
+
+        if [ -d "$plugin_dir/commands" ]; then
+          for cmd_file in "$plugin_dir"/commands/*.md; do
+            [ -f "$cmd_file" ] || continue
+            cp "$cmd_file" "$COMMANDS_DIR/"
+            ok "/$(basename "$cmd_file" .md)"
+            SUCCEEDED+=("command:$(basename "$cmd_file" .md)")
+          done
+        fi
+      done
+    else
+      err "Could not clone Owl-Listener/designer-skills."
+      FAILED+=("designer-skills clone")
+    fi
+  fi
+
+  dim "Second-wave design skills cover build (web-design-engineer, tastemaker,"
+  dim "landing-page-design, build-awwwards-quality-sites), review (visual-critique"
+  dim "bundle, accessibility-audit, design-qa-checklist), and motion"
+  dim "(animate/emil-design-eng, motion-system) — see design-skills.md 'Second Wave'"
+  dim "for how they map onto ai-design-team.md's 3 agents. animate/emil-design-eng"
+  dim "overlaps impeccable:animate the same way Taste overlaps impeccable:"
+  dim "try both, drop whichever you don't reach for."
 fi
 
 # ---------------------------------------------------------------------------
