@@ -66,13 +66,20 @@ Agent definitions live in `seo-investigation-agents/`.
 ## Pipeline
 
 ```
-Step 0  Load Client Rules + gather inputs
-Step 1  Launch the agents the symptom needs, IN PARALLEL (one message):
-          1 Rank Verifier       2 Drop Forensics
-          3 Cannibalization     4 Profile Consistency
-Step 2  Reconcile: read all findings, resolve or flag disagreements
-Step 3  Launch 5 Report Writer with every findings path
-Step 4  Present: the answer, what is unverified, manual steps, proposed changes
+Step 0   Load Client Rules + gather inputs
+Step 0.5 Pull Search Console query+page rows ONCE (script, paged) to
+         <scratchpad>/gsc.json. Pass it to agents as gsc_data_path.
+Step 1a  Drop symptom only: run 2 Drop Forensics FIRST to get the step date
+Step 1b  Launch the other agents the symptom needs, IN PARALLEL (one message):
+           1 Rank Verifier (windows = 28 days before and after the step date
+             when there is one)       3 Cannibalization
+           4 Profile Consistency
+Step 2   Reconcile: read all findings, resolve or flag disagreements
+Step 3   Launch 5 Report Writer with every findings path and the commit trailer
+Step 4   Present: the answer, what is unverified, manual steps, proposed changes
+
+Non-drop symptoms skip 1a and go straight to 1b. Skip 0.5 when neither agent 1
+nor agent 3 is needed.
 ```
 
 **Which agents to run:**
@@ -88,6 +95,8 @@ Step 4  Present: the answer, what is unverified, manual steps, proposed changes
 Always finish with agent 5.
 
 **Findings location:** give each agent an `output_path` of the form `<scratchpad>/findings/NN-<agent>.md`, so the project folder holds only the final report.
+
+**Shared Search Console data:** agents 1 and 3 read `gsc_data_path` when given and do not pull the same rows again. Agent 4 owns the live redirect variant table for the whole investigation; agent 2 reads it instead of repeating it.
 
 **Reconcile (Step 2):** where two agents disagree, do not pick silently. Put both in the report and say what check would settle it.
 
@@ -145,5 +154,7 @@ The agent files live in `seo-investigation-agents/` so they can be committed wit
 mkdir -p ~/.claude/agents
 ln -s "$(pwd)/seo-investigation-agents/"*.md ~/.claude/agents/
 ```
+
+To use the slash command, also copy `seo-investigation-commands/seo-investigate.md` to `.claude/commands/`. Keep one source of truth: link `.claude/agents/seo-investigation` to the `seo-investigation-agents/` folder rather than copying, so edits are never made in two places.
 
 Requirements: the `openseo-selfhost` MCP server connected; for agent 3, the `jev-cannibalization` skill and an OpenRouter key; for agent 4's citation check, the `seo-maps` skill with DataForSEO or Apify connected (optional).

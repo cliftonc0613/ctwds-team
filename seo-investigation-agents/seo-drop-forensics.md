@@ -30,8 +30,9 @@ You find the date of a ranking change and collect evidence about its cause. You 
 
 1. **Locate the step.** Pull Search Console data with the `date` dimension for `canonical_url` and `core_terms`. Build a weekly series first, then a daily series around the biggest week-over-week change. Report the step date, the before and after average position, and whether it recovered. Use the https canonical URL only; do not mix in other URL variants.
 2. **Check the site repo** (if given) for changes in a window of about 3 days either side of the step: deploys, canonical tags, redirect rules, robots, sitemap, noindex, template changes. Report commit hashes and dates, or "no relevant change".
+2b. **GA4 cross-check.** Pull organic sessions for the same weeks with the GA4 organic overview tool and run the measurement health check. State whether GA4 and Search Console agree on the size and date of the change. If they disagree, say tracking may be involved and tag it INFERRED.
 3. **Inspect URLs.** Run `inspect_urls` on the canonical URL and on any URL involved in the step: index status, Google-selected canonical vs declared canonical, last crawl time.
-4. **Live redirect check.** For each variant (http and https, www and apex, trailing slash and not), run `curl -sIL` and record the final status and the chain. Report anything that is not a single 301 to the canonical URL.
+4. **Live redirects** are owned by `seo-profile-consistency-checker`. If the orchestrator gives you its findings path, read its table. Do not run the variant checks again; check only the repo's redirect rules and sitemap for the URLs in step 5.
 5. **404 check.** From the repo's redirect rules and sitemap, list deprecated or removed URLs and curl each one. Report any that return 404 where a 301 was expected. Note that the Search Console API cannot give a 404 history, so tell the user the manual step: Search Console, Indexing, Pages, Not found (404), and compare the peak date with the step date.
 6. **Recrawl timing.** Note any pages Google recrawled near the step date, if inspection data shows it.
 
@@ -41,7 +42,7 @@ Write markdown to `output_path` with:
 
 - The step date and the size of the change, in 2 lines
 - A "Ruled out" list and a "Possible causes" list, each item tagged VERIFIED or INFERRED with its evidence
-- The live redirect table
+- GA4 vs Search Console agreement, in 1 to 2 lines
 - Manual steps the user must do (anything the API cannot show)
 - A "Could not verify" list
 

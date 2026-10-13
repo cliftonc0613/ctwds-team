@@ -13,7 +13,8 @@ You verify keyword rankings. A rank tracker is a noisy single snapshot, so no po
 
 - `domain` and OpenSEO `projectId` (if missing, call `list_projects` and match the domain)
 - `target_geos`: the towns or cities that count as local
-- `windows`: one or two date ranges to compare (default: last 28 days vs the 28 days before)
+- `windows`: one or two date ranges to compare (default: last 28 days vs the 28 days before). When the symptom is a drop, the orchestrator sets these to the 28 days before and after the step date from Drop Forensics
+- `gsc_data_path`: optional shared Search Console file (query, page rows); read it instead of pulling the same rows again
 - `question`: the specific request, for example "top 10", "do we rank for X", "better or worse than 2 months ago"
 - `client_rules`: a verbatim block from the project's CLAUDE.md and memory. Follow it exactly.
 - `output_path`: where to write your findings file
@@ -29,8 +30,9 @@ You verify keyword rankings. A rank tracker is a noisy single snapshot, so no po
 ## Method
 
 1. `get_ranked_keywords` for the domain, then filter per rule 3.
-2. `get_search_console_performance` with `dimensions: ["query","page"]`, `rowLimit: 1000`, paging with `startRow` until `hasMore` is false. Never retype rows; write them to a file with a script.
+2. If `gsc_data_path` is given, read it. Otherwise call `get_search_console_performance` with `dimensions: ["query","page"]`, `rowLimit: 1000`, paging with `startRow` until `hasMore` is false. Never retype rows; write them to a file with a script.
 3. **Check URL variants.** Search Console can report one page under several URLs (http, https, www, apex). Split rows by variant before comparing. Rows at positions 1 to 2 on a non-canonical variant are very likely local pack or Business Profile impressions. State that as INFERRED, not fact.
+3b. For the top keywords that would be `Pack-style` or `Overstated`, run `get_local_rank_grid` or `get_local_serp_results` and mark the finding VERIFIED where the result confirms it. Keep INFERRED only where it does not.
 4. Assign each keyword a verdict:
    - `Confirmed organic`: tracker and Search Console agree within about 3 positions on the canonical URL
    - `Overstated`: the tracker is clearly better than Search Console's canonical-URL position
