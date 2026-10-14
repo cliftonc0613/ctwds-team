@@ -6,6 +6,44 @@ All agents route through the `blog/SKILL.md` orchestrator.
 
 ---
 
+## Blog Post Writing Standard: RANKED Meta-Prompt
+
+**File:** `RANKED-meta-prompt.md` (same folder as this playbook — `ctwds-team/RANKED-meta-prompt.md`)
+
+### When it loads
+Every time the flow reaches a step that produces blog post body copy — `blog-write` (new draft) or `blog-rewrite` (rewritten draft) — the Content Writer must, **before writing anything**:
+
+1. Use the Read tool to open `RANKED-meta-prompt.md` and read the **entire file**. Do not summarize, excerpt, paraphrase, or work from memory of a previous run. Re-read it on every post, since the file may have changed.
+2. Follow its instructions in full for that post.
+3. If the drafting is delegated to a subagent (e.g. `blog-writer`), pass the file path in the subagent's prompt and instruct it to read the whole file itself. Subagents do not inherit this context, and pasting a summary instead of the file does not count.
+4. If the file cannot be read, stop and tell the user. Do not draft without it.
+
+### Running RANKED inside the team flow
+RANKED is written for one-on-one chat, where the user answers questions and says "run it". Inside this flow:
+
+- **Step 1 (confirm business, keyword, deliverable):** answer it from the pipeline inputs — the Strategy Lead's brief and calendar slot, the Research Analyst's research packet and DISCOURSE.md, the `blog-outline` output, and BRAND.md/VOICE.md. Ask the user only for items those inputs don't supply.
+- **Step 2 (pull K data live):** use whatever keyword/SERP data tools are connected. RANKED names the DataForSEO MCP; if it isn't connected, use the connected alternative (e.g. OpenSEO) and the research packet, and say in the output which source was used. Show the key numbers and clusters in the output as RANKED requires.
+- **Step 3 (write the [R] [A] [N] [K] [E] [D] prompt):** save it as `ranked-prompt.md` next to the draft. Its [N] block must include BRAND.md/VOICE.md rules, and its [D] block must name the platform format the pipeline expects.
+- **Step 4 ("run it"):** when the Content Writer is running a `blog-write`/`blog-rewrite` task, that request counts as "run it". Run the prompt and return the draft without pausing for another go-ahead, unless a thin block or a conflict (below) requires the user's input.
+
+### Scope
+RANKED applies **only to the post-writing steps** (`blog-write`, `blog-rewrite`). Research, briefs, and outlines feed into RANKED as inputs and keep their own skills. The Quality Editor checks the finished draft against the saved `ranked-prompt.md` but does **not** reload the meta-prompt. Translation, repurposing, and media work don't use RANKED.
+
+### Conflict rule
+When this playbook and `RANKED-meta-prompt.md` disagree, settle it by subject:
+
+| Subject | Wins | Why |
+|---------|------|-----|
+| Process: which agent does what, step order, gates, handoffs | This playbook | RANKED covers one writing task, not the team pipeline |
+| How the writing prompt is built and run: RANKED blocks, live data, specificity | `RANKED-meta-prompt.md` | That is the reason it's loaded |
+| Tone and voice | BRAND.md / VOICE.md, placed in RANKED's [N] block | RANKED already lists brand guidelines as non-negotiables |
+| Structure and format of the post | The brief and the target platform, placed in RANKED's [D] block | The publishing target fixes the format |
+| Anything else | `RANKED-meta-prompt.md` at the writing step | The narrower, more specific instruction wins |
+
+**Flagging:** list every conflict and how it was resolved under a "RANKED conflicts" heading in the draft handoff to the Quality Editor. Keep going. **Stop and ask the user** only when a conflict would change the target keyword, the audience, or the deliverable format.
+
+---
+
 ## Agent 1: Content Writer
 
 **Specialty:** Article creation, optimization, and brief development
@@ -15,28 +53,29 @@ All agents route through the `blog/SKILL.md` orchestrator.
 ### Daily Tasks
 | Task | Skill | Description |
 |------|-------|-------------|
-| Draft new articles | `blog-write` | Write one new post using the research packet from Research Analyst |
-| Optimize flagged posts | `blog-rewrite` | Rewrite posts flagged by Quality Editor for freshness or AI content signals |
+| Draft new articles | `blog-write` | Write one new post using the research packet from Research Analyst. **First read all of `RANKED-meta-prompt.md` and follow it (see Blog Post Writing Standard)** |
+| Optimize flagged posts | `blog-rewrite` | Rewrite posts flagged by Quality Editor for freshness or AI content signals. **First read all of `RANKED-meta-prompt.md` and follow it (see Blog Post Writing Standard)** |
 | Outline review | `blog-outline` | Update outlines based on SERP shifts or new competitive gaps from Strategy Lead |
 
 ### Weekly Tasks
 | Task | Skill | Description |
 |------|-------|-------------|
-| Content batch production | `blog-write` | Write 2-3 new posts from Strategy Lead's editorial calendar priorities |
+| Content batch production | `blog-write` | Write 2-3 new posts from Strategy Lead's editorial calendar priorities. Read all of `RANKED-meta-prompt.md` again for each post |
 | Brief development | `blog-brief` | Create detailed content briefs for next week's planned posts |
-| Rewrite queue | `blog-rewrite` | Optimize 1-2 existing posts flagged as decaying by Quality Editor's audit |
+| Rewrite queue | `blog-rewrite` | Optimize 1-2 existing posts flagged as decaying by Quality Editor's audit. Read all of `RANKED-meta-prompt.md` again for each post |
 | Outline bank | `blog-outline` | Build SERP-informed outlines for upcoming content cluster topics |
 | Template selection review | `blog-brief` | Match content types (how-to, listicle, case study) to strategic goals |
 
 ### Key Outputs
 - Published article drafts (platform-formatted)
+- `ranked-prompt.md` per draft (the [R] [A] [N] [K] [E] [D] prompt the draft was written from), plus any "RANKED conflicts" notes
 - Weekly content brief library
 - SERP-informed outlines for upcoming posts
 - Rewrite reports with before/after quality scores
 
 ### Handoffs
 - **Receives from:** Strategy Lead (topic priorities, editorial calendar, briefs), Research Analyst (research packets, discourse data, Google API data), Quality Editor (rewrite flags and score reports)
-- **Hands off to:** Quality Editor (new drafts for scoring and SEO validation), AI Search Specialist (new posts for schema and GEO audit), Media Producer (posts needing images, audio, or charts)
+- **Hands off to:** Quality Editor (new drafts with their `ranked-prompt.md` and conflict notes, for scoring and SEO validation), AI Search Specialist (new posts for schema and GEO audit), Media Producer (posts needing images, audio, or charts)
 
 ---
 
@@ -157,6 +196,7 @@ All agents route through the `blog/SKILL.md` orchestrator.
 | New draft scoring | `blog-analyze` | Run 100-point quality audit on every new draft from Content Writer |
 | SEO validation | `blog-seo-check` | Check title tag, meta description, heading hierarchy, and OG tags on posts ready to publish |
 | Stat verification | `blog-factcheck` | Verify all statistics in drafts against cited sources before publishing |
+| RANKED compliance check | `blog-analyze` | Check each draft against its `ranked-prompt.md`: [N] non-negotiables met, [D] deliverable format matched, [K] keyword and questions covered. Review the "RANKED conflicts" notes. Return failures to Content Writer |
 
 ### Weekly Tasks
 | Task | Skill | Description |
@@ -339,7 +379,7 @@ All agents route through the `blog/SKILL.md` orchestrator.
 ```
 Research Analyst          → research packet + DISCOURSE.md
 Strategy Lead             → topic brief + editorial calendar slot
-Content Writer            → draft article
+Content Writer            → read RANKED-meta-prompt.md in full → ranked-prompt.md → draft article
 Media Producer            → hero image + charts + audio
 Quality Editor            → 100-point score + SEO check + factcheck
 AI Search Specialist      → GEO audit + JSON-LD schema
