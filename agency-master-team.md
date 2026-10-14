@@ -242,6 +242,7 @@ Day 8-9: Content Foundation
                                       → outputs DISCOURSE.md (what market is saying)
   Blog: Content Writer             → /blog write <hero-topic>
                                       → outputs first cornerstone article
+                                      → follows Blog Post Writing Standard (ai-blog-team.md)
   Marketing: Content Writer        → copywriting (homepage, core landing pages)
   SEO: Competitor Strategist       → /seo-competitor-pages
                                       → outputs comparison page brief
@@ -313,7 +314,9 @@ STAGE 1 — Research (Blog Department)
 
 STAGE 2 — Content Creation (Blog Department)
   Content Writer      → /blog outline <topic>          (SERP-informed structure)
-  Content Writer      → /blog write <topic>            (full article)
+  Content Writer      → /blog write <topic>            (full article; follows Blog Post Writing
+                                                    Standard in ai-blog-team.md — reads all of
+                                                    RANKED-meta-prompt.md first)
   Media Producer      → /blog image generate           (hero + inline images)
   Quality Editor      → /blog analyze <file>           (100-point score)
   Quality Editor      → /blog seo-check <file>         (SEO validation)
@@ -403,7 +406,8 @@ CREATIVE BUILD (Week 1-2)
   Ads: Creative Director       → /ads-generate               (ad image library)
   Ads: Creative Director       → /ads-photoshoot             (product photography)
   Marketing: Content Writer    → copywriting                 (landing page copy)
-  Blog: Content Writer         → /blog write <topic>         (content for retargeting)
+  Blog: Content Writer         → /blog write <topic>         (content for retargeting; follows
+                                                                Blog Post Writing Standard in ai-blog-team.md)
 
 PRE-LAUNCH VALIDATION
   Ads: Performance Optimizer   → /ads-landing <url>          (landing page audit)
@@ -570,7 +574,7 @@ These agents do similar work across departments and should coordinate:
 
 # Start a new blog post (full pipeline)
 /blog discourse <topic>
-/blog write <topic>
+/blog write <topic>   # follows Blog Post Writing Standard in ai-blog-team.md (reads all of RANKED-meta-prompt.md first)
 /blog geo <file>
 /blog schema <file>
 /blog repurpose <file>
