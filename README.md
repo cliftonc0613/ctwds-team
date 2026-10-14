@@ -86,7 +86,8 @@ ctwds-team/
 ├── ai-marketing-team.md          ← 8 agents built on those skills: daily/weekly tasks, outputs, handoffs
 │
 ├── blog-skills.md
-├── ai-blog-team.md
+├── ai-blog-team.md               ← includes the Blog Post Writing Standard (RANKED rule for blog-write/blog-rewrite)
+├── RANKED-meta-prompt.md         ← prompt that builds each post's writing prompt; read in full before every blog draft
 │
 ├── seo-skills.md
 ├── ai-seo-team.md
@@ -108,7 +109,7 @@ ctwds-team/
 └── site-builder-skills.md        ← `astro-business-builder` plugin — dev tooling, no team doc (see note below)
 ```
 
-Every department follows the same two-file pattern: `<name>-skills.md` is the reference list of raw skill/command names; `ai-<name>-team.md` is the operational playbook built on top of it. `agency-master-team.md` is the only file that ties all departments together.
+Every department follows the same two-file pattern (the blog department also loads `RANKED-meta-prompt.md` — see below): `<name>-skills.md` is the reference list of raw skill/command names; `ai-<name>-team.md` is the operational playbook built on top of it. `agency-master-team.md` is the only file that ties all departments together.
 
 ---
 
@@ -144,6 +145,10 @@ Each `ai-<name>-team.md` breaks its department into agents. Every agent section 
 - **Handoffs** — which agent it receives work from, and which agent(s) it passes work to (often crossing into other departments)
 
 At the bottom of each file: a **Team Communication Flow** diagram, a **daily standup order**, and a **weekly sync** note.
+
+### Blog Post Writing Standard (RANKED)
+
+`ai-blog-team.md` opens with a **Blog Post Writing Standard**: whenever the flow reaches `blog-write` or `blog-rewrite`, the Content Writer must read all of `RANKED-meta-prompt.md` first (no summarizing, re-read for every post) and follow it. It applies only to those post-writing steps; the Quality Editor checks finished drafts against the saved `ranked-prompt.md`. Conflicts are resolved by subject (process → the playbook; prompt-building → RANKED; tone → BRAND.md/VOICE.md; format → the brief and platform) and listed in the handoff. RANKED pulls keyword data from DataForSEO and falls back to OpenSEO if it isn't connected. `agency-master-team.md`'s `/blog write` steps point to the same standard.
 
 ### How the departments connect
 
