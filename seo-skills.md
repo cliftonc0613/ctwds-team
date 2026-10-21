@@ -12,6 +12,7 @@ Sections 9-12 below are 12 additional standalone skills with no marketplace of t
 - `technical <url>` — Technical deep dive across 9 categories: crawlability, indexability, security, mobile, Core Web Vitals, structured data
 - `page <url>` — Single page deep analysis: titles, meta descriptions, headings, internal linking
 - `content <url>` — E-E-A-T content assessment per 2025 Google Quality Rater Guidelines
+- `openseo-batch-audit` — Runs a full-site crawl through the OpenSEO Self-hosted MCP in sitemap-driven batches instead of one call, for large sites (500+ pages, especially programmatic/local-SEO city×service builds) that hit the worker's `cpu_limit` error on a single-shot audit
 
 ## 2. Schema & On-Page Structure
 
